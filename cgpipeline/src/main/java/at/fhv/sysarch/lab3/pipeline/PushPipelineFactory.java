@@ -3,9 +3,12 @@ package at.fhv.sysarch.lab3.pipeline;
 import at.fhv.sysarch.lab3.animation.AnimationRenderer;
 import at.fhv.sysarch.lab3.obj.Model;
 import javafx.animation.AnimationTimer;
+import javafx.scene.paint.Color;
 
 public class PushPipelineFactory {
     public static AnimationTimer createPipeline(PipelineData pd) {
+        pd.getGraphicsContext().setFill(Color.RED);
+
         // TODO: push from the source (model)
 
         // TODO 1. perform model-view transformation from model to VIEW SPACE coordinates
@@ -33,7 +36,6 @@ public class PushPipelineFactory {
         // viewport and computation of the praction
         return new AnimationRenderer(pd) {
             // TODO rotation variable goes in here
-
             /** This method is called for every frame from the JavaFX Animation
              * system (using an AnimationTimer, see AnimationRenderer). 
              * @param fraction the time which has passed since the last render call in a fraction of a second
@@ -41,7 +43,12 @@ public class PushPipelineFactory {
              */
             @Override
             protected void render(float fraction, Model model) {
-
+                pd.getGraphicsContext().setStroke(Color.RED);
+                model.getFaces().forEach(face -> {
+                    pd.getGraphicsContext().strokeLine(face.getV1().getX()*100, face.getV1().getY()*100, face.getV2().getX()*100, face.getV2().getY()*100);
+                    pd.getGraphicsContext().strokeLine(face.getV2().getX()*100, face.getV2().getY()*100, face.getV3().getX()*100, face.getV3().getY()*100);
+                    pd.getGraphicsContext().strokeLine(face.getV3().getX()*100, face.getV3().getY()*100, face.getV1().getX()*100, face.getV1().getY()*100);
+                });
                 // TODO compute rotation in radians
 
                 // TODO create new model rotation matrix using pd.modelRotAxis
