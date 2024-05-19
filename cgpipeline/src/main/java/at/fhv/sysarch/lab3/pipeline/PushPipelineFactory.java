@@ -3,6 +3,7 @@ package at.fhv.sysarch.lab3.pipeline;
 import at.fhv.sysarch.lab3.animation.AnimationRenderer;
 import at.fhv.sysarch.lab3.obj.Model;
 import javafx.animation.AnimationTimer;
+import javafx.scene.paint.Color;
 
 public class PushPipelineFactory {
     public static AnimationTimer createPipeline(PipelineData pd) {
@@ -41,7 +42,13 @@ public class PushPipelineFactory {
              */
             @Override
             protected void render(float fraction, Model model) {
+                pd.getGraphicsContext().setStroke(Color.RED);
+                model.getFaces().forEach(face -> {
+                   pd.getGraphicsContext().strokeLine(face.getV1().getX()*100, face.getV1().getY()*100, face.getV2().getX()*100, face.getV2().getY()*100);
+                   pd.getGraphicsContext().strokeLine(face.getV2().getX()*100, face.getV2().getY()*100, face.getV3().getX()*100, face.getV3().getY()*100);
+                   pd.getGraphicsContext().strokeLine(face.getV1().getX()*100, face.getV1().getY()*100, face.getV3().getX()*100, face.getV3().getY()*100);
 
+                });
                 // TODO compute rotation in radians
 
                 // TODO create new model rotation matrix using pd.modelRotAxis
