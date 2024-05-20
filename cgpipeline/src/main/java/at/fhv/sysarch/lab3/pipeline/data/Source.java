@@ -1,19 +1,19 @@
-package at.fhv.sysarch.lab3.pipeline;
+package at.fhv.sysarch.lab3.pipeline.data;
 
 import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.obj.Model;
-import at.fhv.sysarch.lab3.pipeline.data.Pipe;
+import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import com.hackoeur.jglm.Vec4;
 
-public class ModelSource implements PullFilter<Face, Face> {
+public class Source implements PullFilter<Face, Face> {
     private Pipe<Face> successor;
     private Model model;
     private int index;
 
-    public ModelSource() {
+    public Source() {
     }
 
-    public ModelSource(Model model) {
+    public Source(Model model) {
         this.model = model;
     }
 
@@ -25,14 +25,19 @@ public class ModelSource implements PullFilter<Face, Face> {
         return model.getFaces().get(index++);
     }
 
-    public void write() {
-        for (Face face : model.getFaces()) {
-            successor.write(face);
-        }
+    @Override
+    public Face transform(Face input) {
+        return input;
     }
 
     @Override
     public void setPipePredecessor(Pipe<Face> predecessor) {
+    }
+
+    public void write() {
+        for (Face face : model.getFaces()) {
+            successor.write(face);
+        }
     }
 
     public void setPipeSuccessor(Pipe<Face> successor) {
@@ -45,10 +50,5 @@ public class ModelSource implements PullFilter<Face, Face> {
 
     public void setIndex(int index) {
         this.index = index;
-    }
-
-    @Override
-    public Face transform(Face input) {
-        return input;
     }
 }

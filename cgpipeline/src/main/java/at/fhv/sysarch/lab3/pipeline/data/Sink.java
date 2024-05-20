@@ -1,22 +1,20 @@
-package at.fhv.sysarch.lab3.pipeline.filter;
+package at.fhv.sysarch.lab3.pipeline.data;
 
 import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.pipeline.PipelineData;
 import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import at.fhv.sysarch.lab3.pipeline.PushFilter;
-import at.fhv.sysarch.lab3.pipeline.data.Pair;
-import at.fhv.sysarch.lab3.pipeline.data.Pipe;
 import at.fhv.sysarch.lab3.rendering.RenderingMode;
 import at.fhv.sysarch.lab3.utils.PipelineHelperUtils;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class DataSink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
+public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
 
     private Pipe<Pair<Face, Color>> predecessor;
     private final PipelineData pd;
 
-    public DataSink(PipelineData pd) {
+    public Sink(PipelineData pd) {
         this.pd = pd;
     }
 
@@ -54,7 +52,6 @@ public class DataSink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
 
     @Override
     public void setPipeSuccessor(Pipe<Pair<Face, Color>> successor) {
-        // no successor
     }
 
     @Override

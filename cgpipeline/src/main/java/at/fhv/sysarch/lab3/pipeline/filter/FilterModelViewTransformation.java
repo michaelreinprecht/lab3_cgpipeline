@@ -19,20 +19,13 @@ public class FilterModelViewTransformation implements PullFilter<Face, Face>, Pu
     }
 
     @Override
-    public Face process(Face input) { //TODO
+    public Face transform(Face input) {
 
         Mat4 modelTranslation = pd.getModelTranslation();
         Mat4 viewTransform = pd.getViewTransform();
         Mat4 newTransformation = viewTransform.multiply(modelTranslation).multiply(rotationMatrix);
 
-        return new Face(
-                newTransformation.multiply(input.getV1()),
-                newTransformation.multiply(input.getV2()),
-                newTransformation.multiply(input.getV3()),
-                newTransformation.multiply(input.getN1()),
-                newTransformation.multiply(input.getN2()),
-                newTransformation.multiply(input.getN3())
-        );
+        return new Face(newTransformation.multiply(input.getV1()), newTransformation.multiply(input.getV2()), newTransformation.multiply(input.getV3()), newTransformation.multiply(input.getN1()), newTransformation.multiply(input.getN2()), newTransformation.multiply(input.getN3()));
     }
 
     @Override
@@ -42,22 +35,23 @@ public class FilterModelViewTransformation implements PullFilter<Face, Face>, Pu
 
     @Override
     public void setPipePredecessor(Pipe<Face> predecessor) {
-
-    }
-
-    @Override
-    public Face transform(Face input) {
-        return null;
+        this.predecessor = predecessor;
     }
 
     @Override
     public void write(Face input) {
+        Face result = transform(input);
 
+        if (null == result)
+            return;
+
+        if (this.successor != null)
+            this.successor.write(result);
     }
 
     @Override
     public void setPipeSuccessor(Pipe<Face> successor) {
-
+        this.successor = successor;
     }
 
     public void setRotationMatrix(Mat4 rotationMatrix) {

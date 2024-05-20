@@ -1,8 +1,8 @@
 package at.fhv.sysarch.lab3.pipeline;
 
-public interface PushPipe<I> {
+public interface PushPipe<T> {
 
-    void write(I input);
+    void write(T input);
 
-    void setSuccessor(PushFilter<I, ?> successor);
+    void setSuccessor(PushFilter<T, ?> successor);
 }

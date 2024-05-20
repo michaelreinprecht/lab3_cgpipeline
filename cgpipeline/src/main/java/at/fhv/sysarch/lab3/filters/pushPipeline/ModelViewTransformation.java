@@ -16,7 +16,7 @@ public class ModelViewTransformation implements Filter<Model, Model> {
     }
 
     @Override
-    public Model process(Model model) {
+    public Model transform(Model model) {
         // TODO: Implement model-view transformation using pd.getViewMatrix()
         // For now, let's assume a simple transformation (you'll need to replace this with actual transformation logic)
         List<Face> transformedFaces = new ArrayList<>();

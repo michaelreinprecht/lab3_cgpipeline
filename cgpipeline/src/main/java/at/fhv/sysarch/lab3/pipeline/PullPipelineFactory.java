@@ -5,8 +5,11 @@ import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.obj.Model;
 import at.fhv.sysarch.lab3.pipeline.data.Pair;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
-import at.fhv.sysarch.lab3.pipeline.filter.DataSink;
+import at.fhv.sysarch.lab3.pipeline.data.Sink;
+import at.fhv.sysarch.lab3.pipeline.data.Source;
+import at.fhv.sysarch.lab3.pipeline.filter.FilterColoring;
 import at.fhv.sysarch.lab3.pipeline.filter.FilterModelViewTransformation;
+import at.fhv.sysarch.lab3.pipeline.filter.FilterPerspectiveDivision;
 import com.hackoeur.jglm.Mat4;
 import com.hackoeur.jglm.Matrices;
 import javafx.animation.AnimationTimer;
@@ -15,19 +18,23 @@ import javafx.scene.paint.Color;
 public class PullPipelineFactory {
     public static AnimationTimer createPipeline(PipelineData pd) {
         // TODO: pull from the source (model)
-        ModelSource source = new ModelSource(pd.getModel());
+        Source source = new Source(pd.getModel());
 
         // TODO 1. perform model-view transformation from model to VIEW SPACE coordinates
         FilterModelViewTransformation pullModelViewTransformationFilter = new FilterModelViewTransformation(pd);
-        Pipe<Face> toModelTransformPipe = new Pipe<>();
-        pullModelViewTransformationFilter.setPipePredecessor(toModelTransformPipe);
-        toModelTransformPipe.setPredecessor(source);
+        Pipe<Face> toModelViewTransformationPipe = new Pipe<>();
+        pullModelViewTransformationFilter.setPipePredecessor(toModelViewTransformationPipe);
+        toModelViewTransformationPipe.setPredecessor(source);
 
         // TODO 2. perform backface culling in VIEW SPACE
 
         // TODO 3. perform depth sorting in VIEW SPACE
 
         // TODO 4. add coloring (space unimportant)
+        FilterColoring filterColoring = new FilterColoring(pd);
+        Pipe<Face> toColoringPipe = new Pipe<>();
+        filterColoring.setPipePredecessor(toColoringPipe);
+        toColoringPipe.setPredecessor(pullModelViewTransformationFilter);
 
         // lighting can be switched on/off
         if (pd.isPerformLighting()) {
@@ -39,8 +46,16 @@ public class PullPipelineFactory {
         }
 
         // TODO 6. perform perspective division to screen coordinates
+        FilterPerspectiveDivision filterPerspectiveDivision = new FilterPerspectiveDivision(pd);
+        Pipe<Pair<Face, Color>> toPerspectiveDivisionPipe = new Pipe<>();
+        filterPerspectiveDivision.setPipePredecessor(toPerspectiveDivisionPipe);
+        toPerspectiveDivisionPipe.setPredecessor(filterPerspectiveDivision);
 
         // TODO 7. feed into the sink (renderer)
+        Sink sink = new Sink(pd);
+        Pipe<Pair<Face, Color>> toSinkPipe = new Pipe<>();
+        sink.setPipePredecessor(toSinkPipe);
+        toSinkPipe.setPredecessor(filterPerspectiveDivision);
 
         // returning an animation renderer which handles clearing of the
         // viewport and computation of the praction
@@ -70,6 +85,7 @@ public class PullPipelineFactory {
 
                 // TODO trigger rendering of the pipeline
                 source.setIndex(0);
+                sink.read();
             }
         };
     }

@@ -2,11 +2,11 @@ package at.fhv.sysarch.lab3.pipeline;
 
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
 
-public interface PushFilter<T, T1> {
+public interface PushFilter<I, O> {
 
-    void write(T data);
+    void write(I data);
 
-    void setPipeSuccessor(Pipe<T1> successor);
+    void setPipeSuccessor(Pipe<O> successor);
 
-    T1 transform(T input);
+    O transform(I input);
 }

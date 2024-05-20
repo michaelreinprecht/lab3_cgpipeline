@@ -5,7 +5,7 @@ import at.fhv.sysarch.lab3.obj.Model;
 
 public class Source implements Filter<Model, Model> {
     @Override
-    public Model process(Model input) {
+    public Model transform(Model input) {
         return null;
     }
 }
