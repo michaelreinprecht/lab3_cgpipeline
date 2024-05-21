@@ -6,27 +6,27 @@ import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import at.fhv.sysarch.lab3.pipeline.PushFilter;
 import at.fhv.sysarch.lab3.pipeline.data.Pair;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
-import at.fhv.sysarch.lab3.utils.PipelineHelperUtils;
+import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import javafx.scene.paint.Color;
+import com.hackoeur.jglm.Mat4;
 
 public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
 
     private Pipe<Pair<Face, Color>> predecessor;
     private Pipe<Pair<Face, Color>> successor;
-    private final PipelineData pd;
+    private final PipelineData pipelineData;
 
-    public FilterPerspectiveDivision(PipelineData pd) {
-        this.pd = pd;
+    public FilterPerspectiveDivision(PipelineData pipelineData) {
+        this.pipelineData = pipelineData;
     }
 
     @Override
     public Pair<Face, Color> read() {
         Pair<Face, Color> input = predecessor.read();
 
-        if (null == input)
-            return null;
-        else if (PipelineHelperUtils.isFaceEnd(input.fst()))
+        if (input == null || PipelineHelperUtil.isFaceEnd(input.fst())) {
             return input;
+        }
 
         return transform(input);
     }
@@ -35,8 +35,9 @@ public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, 
     public void write(Pair<Face, Color> input) {
         Pair<Face, Color> result = transform(input);
 
-        if (null != this.successor)
+        if (this.successor != null) {
             this.successor.write(result);
+        }
     }
 
     @Override
@@ -44,16 +45,17 @@ public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, 
         Face face = input.fst();
 
         Face dividedFace = new Face(
-                face.getV1().multiply((1.0f / face.getV1().getW())),
-                face.getV2().multiply((1.0f / face.getV2().getW())),
-                face.getV3().multiply((1.0f / face.getV3().getW())),
+                face.getV1().multiply(0.2f / face.getV1().getW()),
+                face.getV2().multiply(0.2f / face.getV2().getW()),
+                face.getV3().multiply(0.2f / face.getV3().getW()),
                 face
         );
 
+        Mat4 viewportTransform = pipelineData.getViewportTransform();
         Face transformedFace = new Face(
-                pd.getViewportTransform().multiply(dividedFace.getV1()),
-                pd.getViewportTransform().multiply(dividedFace.getV2()),
-                pd.getViewportTransform().multiply(dividedFace.getV3()),
+                viewportTransform.multiply(dividedFace.getV1()),
+                viewportTransform.multiply(dividedFace.getV2()),
+                viewportTransform.multiply(dividedFace.getV3()),
                 dividedFace
         );
 

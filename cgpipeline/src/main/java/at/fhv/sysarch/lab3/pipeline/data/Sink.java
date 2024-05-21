@@ -5,28 +5,27 @@ import at.fhv.sysarch.lab3.pipeline.PipelineData;
 import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import at.fhv.sysarch.lab3.pipeline.PushFilter;
 import at.fhv.sysarch.lab3.rendering.RenderingMode;
-import at.fhv.sysarch.lab3.utils.PipelineHelperUtils;
+import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
 
     private Pipe<Pair<Face, Color>> predecessor;
-    private final PipelineData pd;
+    private final PipelineData pipelineData;
 
-    public Sink(PipelineData pd) {
-        this.pd = pd;
+    public Sink(PipelineData pipelineData) {
+        this.pipelineData = pipelineData;
     }
 
     @Override
     public Pair<Face, Color> read() {
-        while (true) {
-            Pair<Face, Color> input = predecessor.read();
+        Pair<Face, Color> input;
 
-            if (null == input)
-                continue;
-            else if (PipelineHelperUtils.isFaceEnd(input.fst()))
+        while ((input = predecessor.read()) != null) {
+            if (PipelineHelperUtil.isFaceEnd(input.fst())) {
                 break;
+            }
 
             transform(input);
         }
@@ -34,15 +33,16 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
         return null;
     }
 
+
     @Override
     public void write(Pair<Face, Color> pair) {
 
-        if (pd.getRenderingMode().equals(RenderingMode.WIREFRAME))
-            renderWireframe(pd.getGraphicsContext(), pair);
-        else if (pd.getRenderingMode().equals(RenderingMode.FILLED))
-            renderFilled(pd.getGraphicsContext(), pair);
+        if (pipelineData.getRenderingMode().equals(RenderingMode.WIREFRAME))
+            renderWireframe(pipelineData.getGraphicsContext(), pair);
+        else if (pipelineData.getRenderingMode().equals(RenderingMode.FILLED))
+            renderFilled(pipelineData.getGraphicsContext(), pair);
         else
-            renderPoint(pd.getGraphicsContext(), pair);
+            renderPoint(pipelineData.getGraphicsContext(), pair);
     }
 
     @Override
@@ -59,29 +59,22 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
         Face face = input.fst();
         Color color = input.snd();
 
-        double[] x = new double[]{
-                face.getV1().getX(),
-                face.getV2().getX(),
-                face.getV3().getX()
-        };
-        double[] y = new double[]{
-                face.getV1().getY(),
-                face.getV2().getY(),
-                face.getV3().getY()
-        };
+        double[] x = new double[]{face.getV1().getX(), face.getV2().getX(), face.getV3().getX()};
+        double[] y = new double[]{face.getV1().getY(), face.getV2().getY(), face.getV3().getY()};
 
-        pd.getGraphicsContext().setStroke(color);
-        pd.getGraphicsContext().setFill(color);
-        switch (pd.getRenderingMode()) {
+        pipelineData.getGraphicsContext().setStroke(color);
+        pipelineData.getGraphicsContext().setFill(color);
+
+        switch (pipelineData.getRenderingMode()) {
             case POINT:
-                pd.getGraphicsContext().fillOval(x[0], y[0], 3, 3);
+                pipelineData.getGraphicsContext().fillOval(x[0], y[0], 3, 3);
                 break;
             case WIREFRAME:
-                pd.getGraphicsContext().strokePolygon(x, y, x.length);
+                pipelineData.getGraphicsContext().strokePolygon(x, y, x.length);
                 break;
             case FILLED:
-                pd.getGraphicsContext().fillPolygon(x, y, x.length);
-                pd.getGraphicsContext().strokePolygon(x, y, x.length);
+                pipelineData.getGraphicsContext().fillPolygon(x, y, x.length);
+                pipelineData.getGraphicsContext().strokePolygon(x, y, x.length);
                 break;
         }
 

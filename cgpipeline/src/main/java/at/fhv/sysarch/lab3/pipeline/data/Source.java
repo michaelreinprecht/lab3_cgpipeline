@@ -22,12 +22,13 @@ public class Source implements PullFilter<Face, Face> {
         if (index >= model.getFaces().size()) {
             return new Face(Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO);
         }
+
         return model.getFaces().get(index++);
     }
 
     @Override
     public Face transform(Face input) {
-        return input;
+        return null;
     }
 
     @Override
