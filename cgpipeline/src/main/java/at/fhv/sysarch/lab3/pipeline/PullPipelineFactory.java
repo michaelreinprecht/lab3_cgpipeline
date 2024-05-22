@@ -36,22 +36,29 @@ public class PullPipelineFactory {
         coloringPipe.setPullPredecessor(filterModelViewTransformation);
 
         // lighting can be switched on/off
+        FilterProjectionTransformation filterProjectionTransformation = new FilterProjectionTransformation(pd);
+        Pipe<Pair<Face, Color>> projectionTransformationPipe = new Pipe<>();
+
+
         if (pd.isPerformLighting()) {
             // 4a. TODO perform lighting in VIEW SPACE
 
             
             // 5. TODO perform projection transformation on VIEW SPACE coordinates
+            filterProjectionTransformation.setPipePredecessor(projectionTransformationPipe);
+            projectionTransformationPipe.setPullPredecessor(filterColoring);
 
         } else {
             // 5. TODO perform projection transformation
-
+            filterProjectionTransformation.setPipePredecessor(projectionTransformationPipe);
+            projectionTransformationPipe.setPullPredecessor(filterColoring);
         }
 
         // TODO 6. perform perspective division to screen coordinates
         FilterPerspectiveDivision filterPerspectiveDivision = new FilterPerspectiveDivision(pd);
         Pipe<Pair<Face, Color>> perspectiveDivisionPipe = new Pipe<>();
         filterPerspectiveDivision.setPipePredecessor(perspectiveDivisionPipe);
-        perspectiveDivisionPipe.setPullPredecessor(filterColoring);
+        perspectiveDivisionPipe.setPullPredecessor(filterProjectionTransformation);
 
         // TODO 7. feed into the sink (renderer)
         Renderer sink = new Renderer(pd);

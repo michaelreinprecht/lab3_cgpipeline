@@ -20,8 +20,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    private final static int VIEW_WIDTH  = 430;
-    private final static int VIEW_HEIGHT = 270;
+    private final static int VIEW_WIDTH  = 800;
+    private final static int VIEW_HEIGHT = 480;
 
     private final static int SCENE_WIDTH  = VIEW_WIDTH * 2;
     private final static int SCENE_HEIGHT = VIEW_HEIGHT * 2;

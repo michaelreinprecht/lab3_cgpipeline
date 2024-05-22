@@ -27,12 +27,17 @@ public class PushPipelineFactory {
         Pipe<Pair<Face, Color>> perspectiveDivisionPipe = new Pipe<>();
         perspectiveDivisionPipe.setPushSuccessor(filterPerspectiveDivision);
 
+        FilterProjectionTransformation filterProjectionTransformation = new FilterProjectionTransformation(pd);
+        filterProjectionTransformation.setPipeSuccessor(perspectiveDivisionPipe);
+        Pipe<Pair<Face, Color>> filterProjectionPipe = new Pipe<>();
+        filterProjectionPipe.setPushSuccessor(filterPerspectiveDivision);
+
         // lighting can be switched on/off
         if (pd.isPerformLighting()) {
             // 5. TODO perform projection transformation on VIEW SPACE coordinates
 
-            // 4a. TODO perform lighting in VIEW SPACE
 
+            // 4a. TODO perform lighting in VIEW SPACE
 
         } else {
             // 5. TODO perform projection transformation
@@ -40,7 +45,7 @@ public class PushPipelineFactory {
 
         // TODO 4. add coloring (space unimportant)
         FilterColoring filterColoring = new FilterColoring(pd);
-        filterColoring.setPipeSuccessor(perspectiveDivisionPipe);
+        filterColoring.setPipeSuccessor(filterProjectionPipe);
         Pipe<Face> coloringPipe = new Pipe<>();
         coloringPipe.setPushSuccessor(filterColoring);
 
