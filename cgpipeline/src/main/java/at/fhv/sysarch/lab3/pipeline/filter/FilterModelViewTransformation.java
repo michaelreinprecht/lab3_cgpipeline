@@ -29,7 +29,8 @@ public class FilterModelViewTransformation implements PullFilter<Face, Face>, Pu
 
     @Override
     public Face read() {
-        return predecessor.read();
+        Face face =  predecessor.read();
+        return transform(face);
     }
 
     @Override

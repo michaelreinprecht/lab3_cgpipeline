@@ -5,7 +5,7 @@ import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.obj.Model;
 import at.fhv.sysarch.lab3.pipeline.data.Pair;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
-import at.fhv.sysarch.lab3.pipeline.data.Sink;
+import at.fhv.sysarch.lab3.pipeline.data.Renderer;
 import at.fhv.sysarch.lab3.pipeline.data.Source;
 import at.fhv.sysarch.lab3.pipeline.filter.*;
 import com.hackoeur.jglm.Mat4;
@@ -54,7 +54,7 @@ public class PullPipelineFactory {
         perspectiveDivisionPipe.setPullPredecessor(filterColoring);
 
         // TODO 7. feed into the sink (renderer)
-        Sink sink = new Sink(pd);
+        Renderer sink = new Renderer(pd);
         Pipe<Pair<Face, Color>> sinkPipe = new Pipe<>();
         sink.setPipePredecessor(sinkPipe);
         sinkPipe.setPullPredecessor(filterPerspectiveDivision);
@@ -73,7 +73,7 @@ public class PullPipelineFactory {
             @Override
             protected void render(float fraction, Model model) {
                 // TODO compute rotation in radians
-                rotation = rotation + fraction;
+                rotation = rotation + fraction*2;
                 double rotationRad = Math.toRadians(rotation);
 
                 // TODO create new model rotation matrix using pd.modelRotAxis
@@ -81,10 +81,10 @@ public class PullPipelineFactory {
 
                 // TODO compute updated model-view tranformation
                 Mat4 rotationMatrix = Matrices.rotate((float) rotationRad, rotationAxis);
-/*
+
                 // TODO update model-view filter
                 filterModelViewTransformation.setRotationMatrix(rotationMatrix);
-*/
+
                 // TODO trigger rendering of the pipeline
                 source.setIndex(0);
                 sink.read();

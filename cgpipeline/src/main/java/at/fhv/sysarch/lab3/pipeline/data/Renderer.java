@@ -9,12 +9,11 @@ import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
+public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
 
     private Pipe<Pair<Face, Color>> predecessor;
     private final PipelineData pipelineData;
-
-    public Sink(PipelineData pipelineData) {
+    public Renderer(PipelineData pipelineData) {
         this.pipelineData = pipelineData;
     }
 
@@ -36,7 +35,6 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
 
     @Override
     public void write(Pair<Face, Color> pair) {
-
         if (pipelineData.getRenderingMode().equals(RenderingMode.WIREFRAME))
             renderWireframe(pipelineData.getGraphicsContext(), pair);
         else if (pipelineData.getRenderingMode().equals(RenderingMode.FILLED))
