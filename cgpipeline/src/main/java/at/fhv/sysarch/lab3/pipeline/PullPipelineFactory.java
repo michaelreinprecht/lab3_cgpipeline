@@ -73,7 +73,7 @@ public class PullPipelineFactory {
             @Override
             protected void render(float fraction, Model model) {
                 // TODO compute rotation in radians
-                rotation = rotation + fraction*2;
+                rotation = rotation + fraction*4;
                 double rotationRad = Math.toRadians(rotation);
 
                 // TODO create new model rotation matrix using pd.modelRotAxis

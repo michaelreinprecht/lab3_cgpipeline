@@ -16,48 +16,47 @@ import javafx.scene.paint.Color;
 
 public class PushPipelineFactory {
     public static AnimationTimer createPipeline(PipelineData pd) {
-        // TODO: push from the source (model)
-        Source source = new Source();
-
-
-        // TODO 1. perform model-view transformation from model to VIEW SPACE coordinates
-        FilterModelViewTransformation filterModelViewTransformation = new FilterModelViewTransformation(pd);
-        Pipe<Face> modelViewTransformationPipe = new Pipe<>();
-        source.setPipeSuccessor(modelViewTransformationPipe);
-        modelViewTransformationPipe.setPushSuccessor(filterModelViewTransformation);
-
-        // TODO 2. perform backface culling in VIEW SPACE
-
-        // TODO 3. perform depth sorting in VIEW SPACE
-
-        // TODO 4. add coloring (space unimportant)
-        FilterColoring filterColoring = new FilterColoring(pd);
-        Pipe<Face> coloringPipe = new Pipe<>();
-        filterModelViewTransformation.setPipeSuccessor(coloringPipe);
-        coloringPipe.setPushSuccessor(filterColoring);
-
-        // lighting can be switched on/off
-        if (pd.isPerformLighting()) {
-            // 4a. TODO perform lighting in VIEW SPACE
-
-            // 5. TODO perform projection transformation on VIEW SPACE coordinates
-
-        } else {
-            // 5. TODO perform projection transformation
-
-        }
+        // TODO 7. feed into the sink (renderer)
+        Renderer renderer = new Renderer(pd);
+        Pipe<Pair<Face, Color>> renderPipe = new Pipe<>();
+        renderPipe.setPushSuccessor(renderer);
 
         // TODO 6. perform perspective division to screen coordinates
         FilterPerspectiveDivision filterPerspectiveDivision = new FilterPerspectiveDivision(pd);
+        filterPerspectiveDivision.setPipeSuccessor(renderPipe);
         Pipe<Pair<Face, Color>> perspectiveDivisionPipe = new Pipe<>();
-        filterPerspectiveDivision.setPipeSuccessor(perspectiveDivisionPipe);
         perspectiveDivisionPipe.setPushSuccessor(filterPerspectiveDivision);
 
-        // TODO 7. feed into the sink (renderer)
-        Renderer sink = new Renderer(pd);
-        Pipe<Pair<Face, Color>> sinkPipe = new Pipe<>();
-        sink.setPipeSuccessor(sinkPipe);
-        sinkPipe.setPushSuccessor(sink);
+        // lighting can be switched on/off
+        if (pd.isPerformLighting()) {
+            // 5. TODO perform projection transformation on VIEW SPACE coordinates
+
+            // 4a. TODO perform lighting in VIEW SPACE
+
+
+        } else {
+            // 5. TODO perform projection transformation
+        }
+
+        // TODO 4. add coloring (space unimportant)
+        FilterColoring filterColoring = new FilterColoring(pd);
+        filterColoring.setPipeSuccessor(perspectiveDivisionPipe);
+        Pipe<Face> coloringPipe = new Pipe<>();
+        coloringPipe.setPushSuccessor(filterColoring);
+
+        // TODO 1. perform model-view transformation from model to VIEW SPACE coordinates
+        FilterModelViewTransformation filterModelViewTransformation = new FilterModelViewTransformation(pd);
+        filterModelViewTransformation.setPipeSuccessor(coloringPipe);
+        Pipe<Face> modelViewTransformationPipe = new Pipe<>();
+        modelViewTransformationPipe.setPushSuccessor(filterModelViewTransformation);
+
+        // TODO 3. perform depth sorting in VIEW SPACE
+
+        // TODO 2. perform backface culling in VIEW SPACE
+
+        // TODO: push from the source (model)
+        Source source = new Source();
+        source.setPipeSuccessor(modelViewTransformationPipe);
 
         // returning an animation renderer which handles clearing of the
         // viewport and computation of the praction
@@ -73,7 +72,7 @@ public class PushPipelineFactory {
             @Override
             protected void render(float fraction, Model model) {
                 // TODO compute rotation in radians
-                rotation = rotation + fraction*2;
+                rotation = rotation + fraction*4;
                 double rotationRad = Math.toRadians(rotation);
 
                 // TODO create new model rotation matrix using pd.modelRotAxis
