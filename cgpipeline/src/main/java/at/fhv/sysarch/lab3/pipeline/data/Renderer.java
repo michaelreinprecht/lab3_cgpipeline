@@ -22,7 +22,7 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
         Pair<Face, Color> input;
 
         while ((input = predecessor.read()) != null) {
-            if (PipelineHelperUtil.isFaceEnd(input.fst())) {
+            if (PipelineHelperUtil.isFaceDone(input.fst())) {
                 break;
             }
 

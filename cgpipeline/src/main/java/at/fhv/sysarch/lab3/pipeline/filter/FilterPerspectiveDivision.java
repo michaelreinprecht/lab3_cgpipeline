@@ -24,7 +24,7 @@ public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, 
     public Pair<Face, Color> read() {
         Pair<Face, Color> input = predecessor.read();
 
-        if (input == null || PipelineHelperUtil.isFaceEnd(input.fst())) {
+        if (input == null || PipelineHelperUtil.isFaceDone(input.fst())) {
             return input;
         }
 
