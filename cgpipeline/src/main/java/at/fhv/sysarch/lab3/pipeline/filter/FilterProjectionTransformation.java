@@ -11,18 +11,22 @@ import com.hackoeur.jglm.Mat4;
 import javafx.scene.paint.Color;
 
 public class FilterProjectionTransformation implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
-    private Mat4 projTransform;
 
     private Pipe<Pair<Face, Color>> predecessor;
     private Pipe<Pair<Face, Color>> successor;
+    private final PipelineData pipelineData;
 
     public FilterProjectionTransformation(PipelineData pipelineData) {
-        projTransform = pipelineData.getProjTransform();
+        this.pipelineData = pipelineData;
     }
 
     @Override
     public Pair<Face, Color> read() {
         Pair<Face, Color> input = predecessor.read();
+        if (input == null) {
+            return null;
+        }
+
         return transform(input);
     }
 
@@ -30,7 +34,7 @@ public class FilterProjectionTransformation implements PullFilter<Pair<Face, Col
     public void write(Pair<Face, Color> input) {
         Pair<Face, Color> result = transform(input);
 
-        if (this.successor != null) {
+        if (result != null && this.successor != null) {
             this.successor.write(result);
         }
     }
@@ -50,7 +54,10 @@ public class FilterProjectionTransformation implements PullFilter<Pair<Face, Col
         Face face = input.fst();
         Color color = input.snd();
 
+        Mat4 projTransform = pipelineData.getProjTransform();
+
         Face result = new Face(projTransform.multiply(face.getV1()), projTransform.multiply(face.getV2()), projTransform.multiply(face.getV3()), face);
+
         return new Pair<>(result, color);
     }
 }

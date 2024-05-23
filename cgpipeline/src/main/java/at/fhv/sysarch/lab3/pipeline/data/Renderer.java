@@ -13,6 +13,7 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
 
     private Pipe<Pair<Face, Color>> predecessor;
     private final PipelineData pipelineData;
+
     public Renderer(PipelineData pipelineData) {
         this.pipelineData = pipelineData;
     }
@@ -31,7 +32,6 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
 
         return null;
     }
-
 
     @Override
     public void write(Pair<Face, Color> pair) {
