@@ -42,7 +42,15 @@ public class FilterLighting implements PullFilter<Pair<Face, Color>, Pair<Face, 
 
     @Override
     public Pair<Face, Color> transform(Pair<Face, Color> input) {
-        return input;
+        Face face = input.first();
+
+        float shading = face.getN1().toVec3().dot(pipelineData.getLightPos().getUnitVector());
+
+        if (shading <= 0) {
+            return new Pair<>(face, input.second().deriveColor(0, 1, 0, 1));
+        }
+
+        return new Pair<>(face, input.second().deriveColor(0, 1, shading, 1));
     }
 
     @Override
