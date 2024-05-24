@@ -5,7 +5,7 @@ import com.hackoeur.jglm.Vec4;
 
 public class PipelineHelperUtil {
 
-    public static boolean isFaceDone(Face face) {
+    public static boolean isPipelineDone(Face face) {
 
         if (face == null) {
             return false;

@@ -32,32 +32,40 @@ public class PushPipelineFactory {
         Pipe<Pair<Face, Color>> filterProjectionPipe = new Pipe<>();
         filterProjectionPipe.setPushSuccessor(filterProjectionTransformation);
 
+        FilterColoring filterColoring = new FilterColoring(pd);
+
         // lighting can be switched on/off
         if (pd.isPerformLighting()) {
             // 5. TODO perform projection transformation on VIEW SPACE coordinates
 
 
             // 4a. TODO perform lighting in VIEW SPACE
+            FilterLighting filterLighting = new FilterLighting(pd);
+            filterLighting.setPipeSuccessor(filterProjectionPipe);
+            Pipe<Pair<Face, Color>> filterLightingPipe = new Pipe<>();
+            filterLightingPipe.setPushSuccessor(filterLighting);
 
+            filterColoring.setPipeSuccessor(filterLightingPipe);
         } else {
             // 5. TODO perform projection transformation
+
+            // TODO 4. add coloring (space unimportant)
+            filterColoring.setPipeSuccessor(filterProjectionPipe);
         }
 
         // TODO 4. add coloring (space unimportant)
-        FilterColoring filterColoring = new FilterColoring(pd);
-        filterColoring.setPipeSuccessor(filterProjectionPipe);
         Pipe<Face> coloringPipe = new Pipe<>();
         coloringPipe.setPushSuccessor(filterColoring);
+
+        // TODO 3. perform depth sorting in VIEW SPACE
+
+        // TODO 2. perform backface culling in VIEW SPACE
 
         // TODO 1. perform model-view transformation from model to VIEW SPACE coordinates
         FilterModelViewTransformation filterModelViewTransformation = new FilterModelViewTransformation(pd);
         filterModelViewTransformation.setPipeSuccessor(coloringPipe);
         Pipe<Face> modelViewTransformationPipe = new Pipe<>();
         modelViewTransformationPipe.setPushSuccessor(filterModelViewTransformation);
-
-        // TODO 3. perform depth sorting in VIEW SPACE
-
-        // TODO 2. perform backface culling in VIEW SPACE
 
         // TODO: push from the source (model)
         Source source = new Source();
