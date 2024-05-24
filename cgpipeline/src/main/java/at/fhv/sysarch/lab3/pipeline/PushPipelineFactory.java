@@ -30,7 +30,7 @@ public class PushPipelineFactory {
         FilterProjectionTransformation filterProjectionTransformation = new FilterProjectionTransformation(pd);
         filterProjectionTransformation.setPipeSuccessor(perspectiveDivisionPipe);
         Pipe<Pair<Face, Color>> filterProjectionPipe = new Pipe<>();
-        filterProjectionPipe.setPushSuccessor(filterPerspectiveDivision);
+        filterProjectionPipe.setPushSuccessor(filterProjectionTransformation);
 
         // lighting can be switched on/off
         if (pd.isPerformLighting()) {

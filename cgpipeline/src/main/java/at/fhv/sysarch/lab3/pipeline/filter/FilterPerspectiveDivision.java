@@ -24,7 +24,7 @@ public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, 
     public Pair<Face, Color> read() {
         Pair<Face, Color> input = predecessor.read();
 
-        if (input == null || PipelineHelperUtil.isFaceDone(input.fst())) {
+        if (input == null || PipelineHelperUtil.isFaceDone(input.first())) {
             return input;
         }
 
@@ -42,13 +42,13 @@ public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, 
 
     @Override
     public Pair<Face, Color> transform(Pair<Face, Color> input) {
-        Face face = input.fst();
+        Face face = input.first();
 
-        Face result = new Face(face.getV1().multiply(0.5f / face.getV1().getW()), face.getV2().multiply(0.5f / face.getV2().getW()), face.getV3().multiply(0.5f / face.getV3().getW()), face);
+        Face result = new Face(face.getV1().multiply(1.0f / face.getV1().getW()), face.getV2().multiply(1.0f / face.getV2().getW()), face.getV3().multiply(1.0f / face.getV3().getW()), face);
 
         Mat4 viewportTransform = pipelineData.getViewportTransform();
 
-        return new Pair<>(new Face(viewportTransform.multiply(result.getV1()), viewportTransform.multiply(result.getV2()), viewportTransform.multiply(result.getV3()), result), input.snd());
+        return new Pair<>(new Face(viewportTransform.multiply(result.getV1()), viewportTransform.multiply(result.getV2()), viewportTransform.multiply(result.getV3()), result), input.second());
     }
 
     @Override

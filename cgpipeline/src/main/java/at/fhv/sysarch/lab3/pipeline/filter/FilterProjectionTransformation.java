@@ -6,7 +6,6 @@ import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import at.fhv.sysarch.lab3.pipeline.PushFilter;
 import at.fhv.sysarch.lab3.pipeline.data.Pair;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
-import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import com.hackoeur.jglm.Mat4;
 import javafx.scene.paint.Color;
 
@@ -51,12 +50,16 @@ public class FilterProjectionTransformation implements PullFilter<Pair<Face, Col
 
     @Override
     public Pair<Face, Color> transform(Pair<Face, Color> input) {
-        Face face = input.fst();
-        Color color = input.snd();
+        Face face = input.first();
+        Color color = input.second();
 
         Mat4 projTransform = pipelineData.getProjTransform();
 
-        Face result = new Face(projTransform.multiply(face.getV1()), projTransform.multiply(face.getV2()), projTransform.multiply(face.getV3()), face);
+        Face result = new Face(
+                projTransform.multiply(face.getV1()),
+                projTransform.multiply(face.getV2()),
+                projTransform.multiply(face.getV3()),
+                face);
 
         return new Pair<>(result, color);
     }

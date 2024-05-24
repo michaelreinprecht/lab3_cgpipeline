@@ -23,7 +23,7 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
         Pair<Face, Color> input;
 
         while ((input = predecessor.read()) != null) {
-            if (PipelineHelperUtil.isFaceDone(input.fst())) {
+            if (PipelineHelperUtil.isFaceDone(input.first())) {
                 break;
             }
 
@@ -54,8 +54,8 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
 
     @Override
     public Pair<Face, Color> transform(Pair<Face, Color> input) {
-        Face face = input.fst();
-        Color color = input.snd();
+        Face face = input.first();
+        Color color = input.second();
 
         double[] x = new double[]{face.getV1().getX(), face.getV2().getX(), face.getV3().getX()};
         double[] y = new double[]{face.getV1().getY(), face.getV2().getY(), face.getV3().getY()};
@@ -80,8 +80,8 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
     }
 
     private void renderWireframe(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.fst();
-        Color color = pair.snd();
+        Face face = pair.first();
+        Color color = pair.second();
 
         gc.setStroke(color);
 
@@ -99,8 +99,8 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
     }
 
     private void renderFilled(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.fst();
-        Color color = pair.snd();
+        Face face = pair.first();
+        Color color = pair.second();
 
         gc.setFill(color);
 
@@ -118,8 +118,8 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
     }
 
     private void renderPoint(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.fst();
-        Color color = pair.snd();
+        Face face = pair.first();
+        Color color = pair.second();
 
         gc.setFill(color);
 
