@@ -46,12 +46,9 @@ public class FilterBackfaceCulling implements PullFilter<Face, Face>, PushFilter
 
     @Override
     public Face transform(Face input) {
-        Vec4 v1 = input.getV1();
-        Vec4 n1 = input.getN1();
-        float dotProduct = v1.dot(n1);
-
-        if (dotProduct > 0)
+        if (input.getV1().dot(input.getN1()) > 0) {
             return null;
+        }
 
         return input;
     }
