@@ -60,10 +60,14 @@ public class PushPipelineFactory {
         // TODO 3. perform depth sorting in VIEW SPACE
 
         // TODO 2. perform backface culling in VIEW SPACE
+        FilterBackfaceCulling filterBackfaceCulling = new FilterBackfaceCulling();
+        filterBackfaceCulling.setPipeSuccessor(coloringPipe);
+        Pipe<Face> backfaceCullingPipe = new Pipe<>();
+        backfaceCullingPipe.setPushSuccessor(filterBackfaceCulling);
 
         // TODO 1. perform model-view transformation from model to VIEW SPACE coordinates
         FilterModelViewTransformation filterModelViewTransformation = new FilterModelViewTransformation(pd);
-        filterModelViewTransformation.setPipeSuccessor(coloringPipe);
+        filterModelViewTransformation.setPipeSuccessor(backfaceCullingPipe);
         Pipe<Face> modelViewTransformationPipe = new Pipe<>();
         modelViewTransformationPipe.setPushSuccessor(filterModelViewTransformation);
 
