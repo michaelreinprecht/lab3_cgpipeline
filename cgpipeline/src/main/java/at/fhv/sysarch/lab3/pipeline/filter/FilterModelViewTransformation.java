@@ -22,14 +22,15 @@ public class FilterModelViewTransformation implements PullFilter<Face, Face>, Pu
 
         Mat4 modelTranslation = pipelineData.getModelTranslation();
         Mat4 viewTransform = pipelineData.getViewTransform();
-        Mat4 newTransformation = viewTransform.multiply(modelTranslation).multiply(rotationMatrix);
+        Mat4 result = viewTransform.multiply(modelTranslation).multiply(rotationMatrix);
 
-        return new Face(newTransformation.multiply(input.getV1()), newTransformation.multiply(input.getV2()), newTransformation.multiply(input.getV3()), newTransformation.multiply(input.getN1()), newTransformation.multiply(input.getN2()), newTransformation.multiply(input.getN3()));
+        return new Face(result.multiply(input.getV1()), result.multiply(input.getV2()), result.multiply(input.getV3()), result.multiply(input.getN1()), result.multiply(input.getN2()), result.multiply(input.getN3()));
     }
 
     @Override
     public Face read() {
-        return predecessor.read();
+        Face face =  predecessor.read();
+        return transform(face);
     }
 
     @Override
