@@ -57,6 +57,10 @@ public class PushPipelineFactory {
         coloringPipe.setPushSuccessor(filterColoring);
 
         // TODO 3. perform depth sorting in VIEW SPACE
+        FilterDepthSorting filterDepthSorting = new FilterDepthSorting();
+        filterDepthSorting.setPipeSuccessor(coloringPipe);
+        Pipe<Face> depthSortingPipe = new Pipe<>();
+        depthSortingPipe.setPushSuccessor(filterDepthSorting);
 
         // TODO 2. perform backface culling in VIEW SPACE
         FilterBackfaceCulling filterBackfaceCulling = new FilterBackfaceCulling();

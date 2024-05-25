@@ -4,6 +4,7 @@ import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import at.fhv.sysarch.lab3.pipeline.PushFilter;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
+import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,9 +14,14 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
     private Pipe<Face> predecessor;
     private Pipe<Face> successor;
     private final List<Face> depthSortedFaces = new ArrayList<>();
+    private boolean sortingCompleted = false;
 
     @Override
     public Face read() {
+        if (!sortingCompleted) {
+            Face face = predecessor.read();
+            collectAndSortFaces(face);
+        }
         return predecessor.read();
     }
 
@@ -26,7 +32,12 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
 
     @Override
     public void write(Face face) {
-        successor.write(face);
+        if (!PipelineHelperUtil.isPipelineDone(face)) {
+            depthSortedFaces.add(face);
+        } else {
+            sortFaces();
+            pushSortedFacesToSuccessor();
+        }
     }
 
     @Override
@@ -38,6 +49,21 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
     public Face transform(Face face) {
         // No transformation needed for depth sorting
         return face;
+    }
+
+    private void collectAndSortFaces(Face face) {
+        if (!PipelineHelperUtil.isPipelineDone(face)) {
+            depthSortedFaces.add(face);
+        } else {
+            sortFaces();
+            sortingCompleted = true;
+        }
+    }
+
+    private void pushSortedFacesToSuccessor() {
+        for (Face face : depthSortedFaces) {
+            successor.write(face);
+        }
     }
 
     private void sortFaces() {
