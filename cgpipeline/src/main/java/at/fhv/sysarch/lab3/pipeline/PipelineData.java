@@ -60,6 +60,7 @@ public class PipelineData {
             this.lightPos     = new Vec3(10, 10, 10);
 
             this.modelPos     = new Vec3(0, -2, 0);
+
             this.modelRotAxis = new Vec3(0, 1, 0);
 
             this.viewingCenter = new Vec3(0, 0, -5);

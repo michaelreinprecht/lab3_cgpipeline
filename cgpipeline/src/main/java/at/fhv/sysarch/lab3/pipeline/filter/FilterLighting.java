@@ -10,13 +10,13 @@ import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import javafx.scene.paint.Color;
 import com.hackoeur.jglm.Mat4;
 
-public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
+public class FilterLighting implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
 
     private Pipe<Pair<Face, Color>> predecessor;
     private Pipe<Pair<Face, Color>> successor;
     private final PipelineData pipelineData;
 
-    public FilterPerspectiveDivision(PipelineData pipelineData) {
+    public FilterLighting(PipelineData pipelineData) {
         this.pipelineData = pipelineData;
     }
 
@@ -44,11 +44,13 @@ public class FilterPerspectiveDivision implements PullFilter<Pair<Face, Color>, 
     public Pair<Face, Color> transform(Pair<Face, Color> input) {
         Face face = input.first();
 
-        Face result = new Face(face.getV1().multiply(1.0f / face.getV1().getW()), face.getV2().multiply(1.0f / face.getV2().getW()), face.getV3().multiply(1.0f / face.getV3().getW()), face);
+        float shading = face.getN1().toVec3().dot(pipelineData.getLightPos().getUnitVector());
 
-        Mat4 viewportTransform = pipelineData.getViewportTransform();
+        if (shading <= 0) {
+            return new Pair<>(face, input.second().deriveColor(0, 1, 0, 1));
+        }
 
-        return new Pair<>(new Face(viewportTransform.multiply(result.getV1()), viewportTransform.multiply(result.getV2()), viewportTransform.multiply(result.getV3()), result), input.second());
+        return new Pair<>(face, input.second().deriveColor(0, 1, shading, 1));
     }
 
     @Override

@@ -9,12 +9,12 @@ import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
+public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, PushFilter<Pair<Face, Color>, Pair<Face, Color>> {
 
     private Pipe<Pair<Face, Color>> predecessor;
     private final PipelineData pipelineData;
 
-    public Sink(PipelineData pipelineData) {
+    public Renderer(PipelineData pipelineData) {
         this.pipelineData = pipelineData;
     }
 
@@ -22,21 +22,19 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
     public Pair<Face, Color> read() {
         Pair<Face, Color> input;
 
-        while ((input = predecessor.read()) != null) {
-            if (PipelineHelperUtil.isFaceEnd(input.fst())) {
+        while (true) {
+            input = predecessor.read();
+            if (PipelineHelperUtil.isPipelineDone(input.first())) {
                 break;
             }
-
             transform(input);
         }
 
         return null;
     }
 
-
     @Override
     public void write(Pair<Face, Color> pair) {
-
         if (pipelineData.getRenderingMode().equals(RenderingMode.WIREFRAME))
             renderWireframe(pipelineData.getGraphicsContext(), pair);
         else if (pipelineData.getRenderingMode().equals(RenderingMode.FILLED))
@@ -56,8 +54,8 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
 
     @Override
     public Pair<Face, Color> transform(Pair<Face, Color> input) {
-        Face face = input.fst();
-        Color color = input.snd();
+        Face face = input.first();
+        Color color = input.second();
 
         double[] x = new double[]{face.getV1().getX(), face.getV2().getX(), face.getV3().getX()};
         double[] y = new double[]{face.getV1().getY(), face.getV2().getY(), face.getV3().getY()};
@@ -82,8 +80,8 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
     }
 
     private void renderWireframe(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.fst();
-        Color color = pair.snd();
+        Face face = pair.first();
+        Color color = pair.second();
 
         gc.setStroke(color);
 
@@ -101,8 +99,8 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
     }
 
     private void renderFilled(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.fst();
-        Color color = pair.snd();
+        Face face = pair.first();
+        Color color = pair.second();
 
         gc.setFill(color);
 
@@ -120,8 +118,8 @@ public class Sink implements PullFilter<Pair<Face, Color>, Pair<Face, Color>>, P
     }
 
     private void renderPoint(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.fst();
-        Color color = pair.snd();
+        Face face = pair.first();
+        Color color = pair.second();
 
         gc.setFill(color);
 

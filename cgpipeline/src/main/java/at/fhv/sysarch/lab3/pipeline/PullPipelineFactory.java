@@ -5,7 +5,7 @@ import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.obj.Model;
 import at.fhv.sysarch.lab3.pipeline.data.Pair;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
-import at.fhv.sysarch.lab3.pipeline.data.Sink;
+import at.fhv.sysarch.lab3.pipeline.data.Renderer;
 import at.fhv.sysarch.lab3.pipeline.data.Source;
 import at.fhv.sysarch.lab3.pipeline.filter.*;
 import com.hackoeur.jglm.Mat4;
@@ -26,6 +26,10 @@ public class PullPipelineFactory {
         modelViewTransformationPipe.setPullPredecessor(source);
 
         // TODO 2. perform backface culling in VIEW SPACE
+        FilterBackfaceCulling filterBackfaceCulling = new FilterBackfaceCulling();
+        Pipe<Face> backfaceCullingPipe = new Pipe<>();
+        filterBackfaceCulling.setPipePredecessor(backfaceCullingPipe);
+        backfaceCullingPipe.setPullPredecessor(filterModelViewTransformation);
 
         // TODO 3. perform depth sorting in VIEW SPACE
 
@@ -36,25 +40,34 @@ public class PullPipelineFactory {
         coloringPipe.setPullPredecessor(filterModelViewTransformation);
 
         // lighting can be switched on/off
+        FilterProjectionTransformation filterProjectionTransformation = new FilterProjectionTransformation(pd);
+
         if (pd.isPerformLighting()) {
             // 4a. TODO perform lighting in VIEW SPACE
-
+            FilterLighting filterLighting = new FilterLighting(pd);
+            Pipe<Pair<Face, Color>> lightingPipe = new Pipe<>();
+            filterLighting.setPipePredecessor(lightingPipe);
+            lightingPipe.setPullPredecessor(filterColoring);
             
             // 5. TODO perform projection transformation on VIEW SPACE coordinates
-
+            Pipe<Pair<Face, Color>> projectionTransformationPipe = new Pipe<>();
+            filterProjectionTransformation.setPipePredecessor(projectionTransformationPipe);
+            projectionTransformationPipe.setPullPredecessor(filterLighting);
         } else {
             // 5. TODO perform projection transformation
-
+            Pipe<Pair<Face, Color>> projectionTransformationPipe = new Pipe<>();
+            filterProjectionTransformation.setPipePredecessor(projectionTransformationPipe);
+            projectionTransformationPipe.setPullPredecessor(filterColoring);
         }
 
         // TODO 6. perform perspective division to screen coordinates
         FilterPerspectiveDivision filterPerspectiveDivision = new FilterPerspectiveDivision(pd);
         Pipe<Pair<Face, Color>> perspectiveDivisionPipe = new Pipe<>();
         filterPerspectiveDivision.setPipePredecessor(perspectiveDivisionPipe);
-        perspectiveDivisionPipe.setPullPredecessor(filterColoring);
+        perspectiveDivisionPipe.setPullPredecessor(filterProjectionTransformation);
 
         // TODO 7. feed into the sink (renderer)
-        Sink sink = new Sink(pd);
+        Renderer sink = new Renderer(pd);
         Pipe<Pair<Face, Color>> sinkPipe = new Pipe<>();
         sink.setPipePredecessor(sinkPipe);
         sinkPipe.setPullPredecessor(filterPerspectiveDivision);
@@ -73,7 +86,7 @@ public class PullPipelineFactory {
             @Override
             protected void render(float fraction, Model model) {
                 // TODO compute rotation in radians
-                rotation = rotation + fraction;
+                rotation = rotation + fraction*4;
                 double rotationRad = Math.toRadians(rotation);
 
                 // TODO create new model rotation matrix using pd.modelRotAxis
@@ -81,10 +94,10 @@ public class PullPipelineFactory {
 
                 // TODO compute updated model-view tranformation
                 Mat4 rotationMatrix = Matrices.rotate((float) rotationRad, rotationAxis);
-/*
+
                 // TODO update model-view filter
                 filterModelViewTransformation.setRotationMatrix(rotationMatrix);
-*/
+
                 // TODO trigger rendering of the pipeline
                 source.setIndex(0);
                 sink.read();

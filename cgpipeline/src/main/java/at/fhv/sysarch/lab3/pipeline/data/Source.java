@@ -17,6 +17,11 @@ public class Source implements PullFilter<Face, Face> {
         this.model = model;
     }
 
+    public Source(Pipe<Face> successor, Model model) {
+        this.successor = successor;
+        this.model = model;
+    }
+
     @Override
     public Face read() {
         if (index >= model.getFaces().size()) {

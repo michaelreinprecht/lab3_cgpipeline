@@ -20,13 +20,18 @@ public class FilterColoring implements PullFilter<Pair<Face, Color>, Face>, Push
 
     @Override
     public Pair<Face, Color> read() {
-        Face input = predecessor.read();
-        return (input == null) ? null : transform(input);
+        Face face = predecessor.read();
+        if (face == null) {
+            return null;
+        }
+
+        return transform(face);
     }
 
     @Override
     public void write(Face input) {
         Pair<Face, Color> result = transform(input);
+
         if (result != null && this.successor != null) {
             this.successor.write(result);
         }
@@ -34,7 +39,8 @@ public class FilterColoring implements PullFilter<Pair<Face, Color>, Face>, Push
 
     @Override
     public Pair<Face, Color> transform(Face input) {
-        return new Pair<>(input, pipelineData.getModelColor());
+        Color color = pipelineData.getModelColor();
+        return new Pair<>(input, color);
     }
 
     @Override
