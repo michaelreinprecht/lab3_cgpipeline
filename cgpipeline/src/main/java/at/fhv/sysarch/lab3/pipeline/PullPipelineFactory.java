@@ -37,7 +37,7 @@ public class PullPipelineFactory {
         FilterColoring filterColoring = new FilterColoring(pd);
         Pipe<Face> coloringPipe = new Pipe<>();
         filterColoring.setPipePredecessor(coloringPipe);
-        coloringPipe.setPullPredecessor(filterModelViewTransformation);
+        coloringPipe.setPullPredecessor(filterBackfaceCulling);
 
         // lighting can be switched on/off
         FilterProjectionTransformation filterProjectionTransformation = new FilterProjectionTransformation(pd);

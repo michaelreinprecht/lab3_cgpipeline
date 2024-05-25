@@ -38,7 +38,6 @@ public class PushPipelineFactory {
         if (pd.isPerformLighting()) {
             // 5. TODO perform projection transformation on VIEW SPACE coordinates
 
-
             // 4a. TODO perform lighting in VIEW SPACE
             FilterLighting filterLighting = new FilterLighting(pd);
             filterLighting.setPipeSuccessor(filterProjectionPipe);
