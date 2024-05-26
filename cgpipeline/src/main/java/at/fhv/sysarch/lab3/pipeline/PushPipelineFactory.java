@@ -64,7 +64,7 @@ public class PushPipelineFactory {
 
         // TODO 2. perform backface culling in VIEW SPACE
         FilterBackfaceCulling filterBackfaceCulling = new FilterBackfaceCulling();
-        filterBackfaceCulling.setPipeSuccessor(coloringPipe);
+        filterBackfaceCulling.setPipeSuccessor(depthSortingPipe);
         Pipe<Face> backfaceCullingPipe = new Pipe<>();
         backfaceCullingPipe.setPushSuccessor(filterBackfaceCulling);
 

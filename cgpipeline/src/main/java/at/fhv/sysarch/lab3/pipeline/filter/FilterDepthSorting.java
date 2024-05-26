@@ -61,8 +61,8 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
     }
 
     private void pushSortedFacesToSuccessor() {
-        for (Face face : depthSortedFaces) {
-            successor.write(face);
+        while (!depthSortedFaces.isEmpty()) {
+            successor.write(depthSortedFaces.removeFirst());
         }
     }
 

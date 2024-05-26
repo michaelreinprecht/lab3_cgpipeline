@@ -45,6 +45,7 @@ public class Source implements PullFilter<Face, Face> {
         for (Face face : model.getFaces()) {
             successor.write(face);
         }
+        successor.write(PipelineHelperUtil.endOfPipelineSignal());
     }
 
     public void setPipeSuccessor(Pipe<Face> successor) {
