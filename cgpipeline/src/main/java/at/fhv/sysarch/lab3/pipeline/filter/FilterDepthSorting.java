@@ -15,14 +15,19 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
     private Pipe<Face> successor;
     private final List<Face> depthSortedFaces = new ArrayList<>();
     private boolean sortingCompleted = false;
+    private int currentIndex = 0;
 
     @Override
     public Face read() {
         if (!sortingCompleted) {
-            Face face = predecessor.read();
-            collectAndSortFaces(face);
+            collectAndSortFaces();
+            sortingCompleted = true;
         }
-        return predecessor.read();
+        if (currentIndex < depthSortedFaces.size()) {
+            return depthSortedFaces.get(currentIndex++);
+        } else {
+            return null; // No more faces to read
+        }
     }
 
     @Override
@@ -51,13 +56,12 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
         return face;
     }
 
-    private void collectAndSortFaces(Face face) {
-        if (!PipelineHelperUtil.isPipelineDone(face)) {
+    private void collectAndSortFaces() {
+        Face face;
+        while (!PipelineHelperUtil.isPipelineDone(face = predecessor.read())) {
             depthSortedFaces.add(face);
-        } else {
-            sortFaces();
-            sortingCompleted = true;
         }
+        sortFaces();
     }
 
     private void pushSortedFacesToSuccessor() {
