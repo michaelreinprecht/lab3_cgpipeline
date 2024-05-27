@@ -6,14 +6,13 @@ import at.fhv.sysarch.lab3.pipeline.PushFilter;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
 import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.LinkedList;
 
 public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Face, Face> {
     private Pipe<Face> predecessor;
     private Pipe<Face> successor;
-    private final List<Face> depthSortedFaces = new ArrayList<>();
+    private final LinkedList<Face> depthSortedFaces = new LinkedList<>();
     private boolean sortingCompleted = false;
     private int currentIndex = 0;
 
