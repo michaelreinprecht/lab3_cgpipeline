@@ -25,7 +25,7 @@ public class Source implements PullFilter<Face, Face> {
 
     @Override
     public Face read() {
-        if (index >= model.getFaces().size()) {
+        if (index == model.getFaces().size()) {
             return PipelineHelperUtil.endOfPipelineSignal();
         }
 

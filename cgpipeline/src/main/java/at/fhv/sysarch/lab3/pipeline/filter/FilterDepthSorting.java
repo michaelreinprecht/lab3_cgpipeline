@@ -8,17 +8,21 @@ import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Face, Face> {
     private Pipe<Face> predecessor;
     private Pipe<Face> successor;
     private LinkedList<Face> faces = new LinkedList<>();
     private LinkedList<Face> depthSortedFaces = new LinkedList<>();
-    private boolean sortingCompleted = false;
-    private int currentIndex = 0;
 
     @Override
     public Face read() {
+        if (!depthSortedFaces.isEmpty()) {
+            return depthSortedFaces.removeFirst();
+        }
+
         Face face = predecessor.read();
         if (!PipelineHelperUtil.isPipelineDone(face)) {
             faces.add(predecessor.read());
@@ -26,9 +30,6 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
         else {
             faces.add(face);
             pullSortFaces();
-        }
-        if (!depthSortedFaces.isEmpty()) {
-            return depthSortedFaces.removeFirst();
         }
         return null;
     }
@@ -55,19 +56,22 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
 
     @Override
     public Face transform(Face face) {
-        // No transformation needed for depth sorting
+        // No transformation needed for depth sorting?
         return face;
     }
 
     private void pullSortFaces() {
         if (!faces.isEmpty()) {
+            // Sort the filtered list
             faces.sort(Comparator.comparing(f ->
-                    f.getV1().getZ() +
-                    f.getV2().getZ() +
-                    f.getV3().getZ()));
+                    (f != null ? f.getV1().getZ() : 0) +
+                    (f != null ? f.getV2().getZ() : 0) +
+                    (f != null ? f.getV3().getZ() : 0)));
+
             depthSortedFaces = faces;
-            faces.clear();
+            faces = new LinkedList<>();
         }
+
     }
 
     private void pushSortedFacesToSuccessor() {
