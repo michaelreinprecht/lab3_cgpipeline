@@ -12,21 +12,25 @@ import java.util.LinkedList;
 public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Face, Face> {
     private Pipe<Face> predecessor;
     private Pipe<Face> successor;
-    private final LinkedList<Face> depthSortedFaces = new LinkedList<>();
+    private LinkedList<Face> faces = new LinkedList<>();
+    private LinkedList<Face> depthSortedFaces = new LinkedList<>();
     private boolean sortingCompleted = false;
     private int currentIndex = 0;
 
     @Override
     public Face read() {
-        if (!sortingCompleted) {
-            collectAndSortFaces();
-            sortingCompleted = true;
+        Face face = predecessor.read();
+        if (!PipelineHelperUtil.isPipelineDone(face)) {
+            faces.add(predecessor.read());
         }
-        if (currentIndex < depthSortedFaces.size()) {
-            return depthSortedFaces.get(currentIndex++);
-        } else {
-            return null; // No more faces to read
+        else {
+            faces.add(face);
+            pullSortFaces();
         }
+        if (!depthSortedFaces.isEmpty()) {
+            return depthSortedFaces.removeFirst();
+        }
+        return null;
     }
 
     @Override
@@ -55,12 +59,15 @@ public class FilterDepthSorting implements PushFilter<Face, Face>, PullFilter<Fa
         return face;
     }
 
-    private void collectAndSortFaces() {
-        Face face;
-        while (!PipelineHelperUtil.isPipelineDone(face = predecessor.read())) {
-            depthSortedFaces.add(face);
+    private void pullSortFaces() {
+        if (!faces.isEmpty()) {
+            faces.sort(Comparator.comparing(f ->
+                    f.getV1().getZ() +
+                    f.getV2().getZ() +
+                    f.getV3().getZ()));
+            depthSortedFaces = faces;
+            faces.clear();
         }
-        sortFaces();
     }
 
     private void pushSortedFacesToSuccessor() {
