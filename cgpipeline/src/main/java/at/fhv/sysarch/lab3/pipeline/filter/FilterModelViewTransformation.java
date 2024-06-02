@@ -5,6 +5,7 @@ import at.fhv.sysarch.lab3.pipeline.PipelineData;
 import at.fhv.sysarch.lab3.pipeline.PullFilter;
 import at.fhv.sysarch.lab3.pipeline.PushFilter;
 import at.fhv.sysarch.lab3.pipeline.data.Pipe;
+import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import com.hackoeur.jglm.Mat4;
 
 public class FilterModelViewTransformation implements PullFilter<Face, Face>, PushFilter<Face, Face> {
@@ -29,9 +30,15 @@ public class FilterModelViewTransformation implements PullFilter<Face, Face>, Pu
 
     @Override
     public Face read() {
-        Face face =  predecessor.read();
+        Face face = predecessor.read();
+
+        if (face == null || PipelineHelperUtil.isPipelineDone(face)) {
+            return face;
+        }
+
         return transform(face);
     }
+
 
     @Override
     public void setPipePredecessor(Pipe<Face> predecessor) {

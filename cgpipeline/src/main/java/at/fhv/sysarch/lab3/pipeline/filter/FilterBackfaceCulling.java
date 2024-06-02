@@ -31,8 +31,8 @@ public class FilterBackfaceCulling implements PullFilter<Face, Face>, PushFilter
     }
 
     @Override
-    public void write(Face input) {
-        Face result = transform(input);
+    public void write(Face face) {
+        Face result = transform(face);
 
         if (result != null && this.successor != null) {
             this.successor.write(result);

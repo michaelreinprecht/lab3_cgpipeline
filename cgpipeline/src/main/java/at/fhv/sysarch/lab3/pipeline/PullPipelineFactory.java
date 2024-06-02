@@ -32,12 +32,16 @@ public class PullPipelineFactory {
         backfaceCullingPipe.setPullPredecessor(filterModelViewTransformation);
 
         // TODO 3. perform depth sorting in VIEW SPACE
+        FilterDepthSorting filterDepthSorting = new FilterDepthSorting();
+        Pipe<Face> depthSortingPipe = new Pipe<>();
+        filterDepthSorting.setPipePredecessor(depthSortingPipe);
+        depthSortingPipe.setPullPredecessor(filterBackfaceCulling);
 
         // TODO 4. add coloring (space unimportant)
         FilterColoring filterColoring = new FilterColoring(pd);
         Pipe<Face> coloringPipe = new Pipe<>();
         filterColoring.setPipePredecessor(coloringPipe);
-        coloringPipe.setPullPredecessor(filterModelViewTransformation);
+        coloringPipe.setPullPredecessor(filterDepthSorting);
 
         // lighting can be switched on/off
         FilterProjectionTransformation filterProjectionTransformation = new FilterProjectionTransformation(pd);

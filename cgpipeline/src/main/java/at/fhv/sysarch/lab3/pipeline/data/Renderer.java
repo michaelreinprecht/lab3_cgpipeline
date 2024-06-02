@@ -21,15 +21,16 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
     @Override
     public Pair<Face, Color> read() {
         Pair<Face, Color> input;
-
         while (true) {
             input = predecessor.read();
+            if (input == null) {
+                continue;
+            }
             if (PipelineHelperUtil.isPipelineDone(input.first())) {
                 break;
             }
             transform(input);
         }
-
         return null;
     }
 

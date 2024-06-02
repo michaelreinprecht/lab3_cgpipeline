@@ -3,6 +3,7 @@ package at.fhv.sysarch.lab3.pipeline.data;
 import at.fhv.sysarch.lab3.obj.Face;
 import at.fhv.sysarch.lab3.obj.Model;
 import at.fhv.sysarch.lab3.pipeline.PullFilter;
+import at.fhv.sysarch.lab3.utils.PipelineHelperUtil;
 import com.hackoeur.jglm.Vec4;
 
 public class Source implements PullFilter<Face, Face> {
@@ -25,7 +26,7 @@ public class Source implements PullFilter<Face, Face> {
     @Override
     public Face read() {
         if (index >= model.getFaces().size()) {
-            return new Face(Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO, Vec4.VEC4_ZERO);
+            return PipelineHelperUtil.endOfPipelineSignal();
         }
 
         return model.getFaces().get(index++);
@@ -44,6 +45,7 @@ public class Source implements PullFilter<Face, Face> {
         for (Face face : model.getFaces()) {
             successor.write(face);
         }
+        successor.write(PipelineHelperUtil.endOfPipelineSignal());
     }
 
     public void setPipeSuccessor(Pipe<Face> successor) {

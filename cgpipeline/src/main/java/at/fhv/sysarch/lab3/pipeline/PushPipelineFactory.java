@@ -38,7 +38,6 @@ public class PushPipelineFactory {
         if (pd.isPerformLighting()) {
             // 5. TODO perform projection transformation on VIEW SPACE coordinates
 
-
             // 4a. TODO perform lighting in VIEW SPACE
             FilterLighting filterLighting = new FilterLighting(pd);
             filterLighting.setPipeSuccessor(filterProjectionPipe);
@@ -58,10 +57,14 @@ public class PushPipelineFactory {
         coloringPipe.setPushSuccessor(filterColoring);
 
         // TODO 3. perform depth sorting in VIEW SPACE
+        FilterDepthSorting filterDepthSorting = new FilterDepthSorting();
+        filterDepthSorting.setPipeSuccessor(coloringPipe);
+        Pipe<Face> depthSortingPipe = new Pipe<>();
+        depthSortingPipe.setPushSuccessor(filterDepthSorting);
 
         // TODO 2. perform backface culling in VIEW SPACE
         FilterBackfaceCulling filterBackfaceCulling = new FilterBackfaceCulling();
-        filterBackfaceCulling.setPipeSuccessor(coloringPipe);
+        filterBackfaceCulling.setPipeSuccessor(depthSortingPipe);
         Pipe<Face> backfaceCullingPipe = new Pipe<>();
         backfaceCullingPipe.setPushSuccessor(filterBackfaceCulling);
 
