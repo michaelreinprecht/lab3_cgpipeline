@@ -36,12 +36,9 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
 
     @Override
     public void write(Pair<Face, Color> pair) {
-        if (pipelineData.getRenderingMode().equals(RenderingMode.WIREFRAME))
-            renderWireframe(pipelineData.getGraphicsContext(), pair);
-        else if (pipelineData.getRenderingMode().equals(RenderingMode.FILLED))
-            renderFilled(pipelineData.getGraphicsContext(), pair);
-        else
-            renderPoint(pipelineData.getGraphicsContext(), pair);
+        if (pair != null) {
+            transform(pair);
+        }
     }
 
     @Override
@@ -78,52 +75,5 @@ public class Renderer implements PullFilter<Pair<Face, Color>, Pair<Face, Color>
         }
 
         return null;
-    }
-
-    private void renderWireframe(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.first();
-        Color color = pair.second();
-
-        gc.setStroke(color);
-
-        double dx1 = face.getV1().getX();
-        double dx2 = face.getV2().getX();
-        double dx3 = face.getV3().getX();
-        double[] x = {dx1, dx2, dx3};
-
-        double dy1 = face.getV1().getY();
-        double dy2 = face.getV2().getY();
-        double dy3 = face.getV3().getY();
-        double[] y = {dy1, dy2, dy3};
-
-        gc.strokePolygon(x, y, 3);
-    }
-
-    private void renderFilled(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.first();
-        Color color = pair.second();
-
-        gc.setFill(color);
-
-        double dx1 = face.getV1().getX();
-        double dx2 = face.getV2().getX();
-        double dx3 = face.getV3().getX();
-        double[] x = {dx1, dx2, dx3};
-
-        double dy1 = face.getV1().getY();
-        double dy2 = face.getV2().getY();
-        double dy3 = face.getV3().getY();
-        double[] y = {dy1, dy2, dy3};
-
-        gc.fillPolygon(x, y, 3);
-    }
-
-    private void renderPoint(GraphicsContext gc, Pair<Face, Color> pair) {
-        Face face = pair.first();
-        Color color = pair.second();
-
-        gc.setFill(color);
-
-        gc.fillOval(face.getV1().getX(), face.getV1().getY(), 3, 3);
     }
 }
